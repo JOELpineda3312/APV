@@ -1,0 +1,1017 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APV - Autodescubrimiento y Planificación de Vida</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --tech-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at top, #1e293b 0%, #0f172a 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(1deg); }
+            66% { transform: translateY(15px) rotate(-1deg); }
+        }
+
+        /* Particle system */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: particle-float 15s linear infinite;
+        }
+
+        @keyframes particle-float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background: var(--tech-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-left: 1rem;
+        }
+
+        .slide-counter {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Slide Container */
+        .slideshow-container {
+            position: relative;
+            height: 100vh;
+            padding-top: 80px;
+        }
+
+        .slide {
+            display: none;
+            position: absolute;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 160px);
+            padding: 2rem;
+            overflow-y: auto;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 100%;
+        }
+
+        .slide-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            background: var(--tech-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .slide-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        /* Interactive Cards */
+        .interactive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .interactive-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(75, 172, 254, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-icon-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--tech-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .expand-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+            color: var(--accent-blue);
+        }
+
+        .interactive-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .interactive-card.expanded .card-content {
+            max-height: 1000px;
+            padding: 1.5rem;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-list {
+            list-style: none;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .detail-item-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Full width content */
+        .full-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-blue);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Download section */
+        .download-section {
+            text-align: center;
+            padding: 3rem;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem 0;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 36px;
+            background: var(--tech-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 15px 35px rgba(75, 172, 254, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 45px rgba(75, 172, 254, 0.6);
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            background: var(--tech-gradient);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(75, 172, 254, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .nav-btn:disabled:hover {
+            background: var(--card-bg);
+            box-shadow: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
+            .interactive-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .navigation {
+                bottom: 1rem;
+                flex-direction: row;
+                width: calc(100% - 2rem);
+                justify-content: space-between;
+            }
+
+            .nav-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-title {
+                font-size: 1.8rem;
+            }
+
+            .logo-placeholder {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8rem;
+            }
+
+            .header-title {
+                font-size: 1.2rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles"></div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo-placeholder">0678</div>
+                <div class="logo-placeholder">IF</div>
+                <div class="header-title">APV - Análisis Autodescubrimiento</div>
+            </div>
+            <div class="slide-counter">
+                <span id="current-slide">1</span> / <span id="total-slides">9</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="slideshow-container">
+        <div class="slide active">
+            <div class="slide-content">
+                <h1 class="slide-title">APV</h1>
+                <p class="slide-subtitle">Análisis de Autodescubrimiento y Planificación de Vida</p>
+                
+                <div class="full-content">
+                    <p style="font-size: 1.2rem; text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+                        Este análisis investigativo se basa en una revisión exhaustiva del programa APV, identificando temas dominantes y corrigiendo inconsistencias numéricas para una estructura lógica y coherente. Las agrupaciones reflejan un enfoque pedagógico integral, con énfasis en el desarrollo holístico de jóvenes de 12 a 22 años.
+                    </p>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-number">4</div>
+                            <div class="stat-label">Módulos Integrales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">53</div>
+                            <div class="stat-label">Clases Especializadas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12-22</div>
+                            <div class="stat-label">Rango de Edad</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Tasa de Éxito Proyectada</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">Módulo 1: Descubriendo tu Potencial</h1>
+                <p class="slide-subtitle">Clases 1-22: Desarrollo Personal, Lectoescritura y Matemáticas</p>
+                
+                <div class="interactive-grid">
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🎯</div>
+                                <h3 class="card-title">Desarrollo Personal</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Enfoque en identidad, valores, emociones, creatividad y proyecto de vida inicial.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 1-8:</strong> Bienvenida, fortalezas/debilidades, valores/pasiones</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Metas SMART:</strong> Visión, propósito, roles e identidad personal</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Inteligencia emocional:</strong> Creatividad y autoconocimiento</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 80% identifican fortalezas personales</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">📚</div>
+                                <h3 class="card-title">Lectoescritura</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Habilidades de lectura profunda, escritura, lógica, argumentación, síntesis y oratoria.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 9-15:</strong> Lectura profunda y puntuación en escritura</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Retentiva lógica:</strong> Estructura del argumento y síntesis</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Oratoria:</strong> Presentación y portafolio de lectoescritura</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 75% mejoran argumentación escrita</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🔢</div>
+                                <h3 class="card-title">Matemáticas</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Diagnóstico, operaciones básicas, ecuaciones e integración de conceptos matemáticos.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 16-22:</strong> Diagnóstico y operaciones básicas</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Conceptos:</strong> Exponentes, logaritmos, gráficas y lógica</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Aplicación:</strong> Fracciones, raíces y ecuaciones de 1er/2do nivel</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta Final:</strong> 90% elaboran y resuelven operaciones matematicas</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">Módulo 2: Herramientas Técnicas</h1>
+                <p class="slide-subtitle">Clases 1-13: Ofimática, Finanzas y Productividad</p>
+                
+                <div class="interactive-grid">
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">💻</div>
+                                <h3 class="card-title">Ofimática y Diseño</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Herramientas digitales como Word, Excel, PowerPoint, Canva y Microsoft Designer.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 1-2:</strong> Formato/edición y documentos profesionales en Word</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 3-4:</strong> Introducción y organización/visualización en Excel</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 5-6:</strong> Diseño/estructura y animaciones en PowerPoint</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 7-8:</strong> Canva, Microsoft Designer e impresión</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 85% crean documentos profesionales</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">💰</div>
+                                <h3 class="card-title">Administración Financiera</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Finanzas personales y contabilidad básica para emprendedores.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 9:</strong> Finanzas personales y control de gastos</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 10:</strong> Conceptos clave de contabilidad para emprendedores</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Incluye:</strong> Presupuestos, activos/pasivos y hábitos financieros</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 70% elaboran presupuestos personales</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🚀</div>
+                                <h3 class="card-title">Productividad y Comunicación</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Técnicas de planificación, productividad y comunicación digital.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 11:</strong> Técnicas fundamentales de productividad</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 12:</strong> Planificación efectiva y herramientas</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 13:</strong> Comunicación efectiva en la era digital</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 80% aplican técnicas de productividad</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">Módulo 3: Construyendo tu Futuro</h1>
+                <p class="slide-subtitle">Clases 1-10: Orientación y Emprendimiento</p>
+                
+                <div class="interactive-grid">
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🗺️</div>
+                                <h3 class="card-title">Orientación Vocacional</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Orientación en decisiones educativas y laborales para un futuro sostenible.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 1, 3, 7:</strong> ICFES, SENA, universidades (públicas/privadas)</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 4, 5, 8:</strong> Exploración de carreras del futuro, profesiones y el poder de los idiomas</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 80% identifican al menos 3 carreras potenciales</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">💼</div>
+                                <h3 class="card-title">Preparación Laboral y Emprendimiento</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Preparación del perfil laboral, creación de CV y conceptos de emprendimiento.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 9:</strong> Vender el perfil laboral y creación de CV</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 10:</strong> Introducción al emprendimiento y plan de carrera</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 75% crean un CV profesional</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">Módulo 4: Proyecto de Vida Final</h1>
+                <p class="slide-subtitle">Clases 1-8: Creación, Exposición y Cierre</p>
+                
+                <div class="interactive-grid">
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🎨</div>
+                                <h3 class="card-title">Desarrollo del Proyecto</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Culminación del proyecto de vida a través de la creación, retroalimentación y exposición.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 1-2:</strong> Creación del Proyecto de Vida (físico y virtual)</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 3:</strong> Retroalimentación final y ajustes complementarios</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 100% de los participantes presentan sus proyectos</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="interactive-card" onclick="toggleCard(this)">
+                        <div class="card-header">
+                            <div class="card-icon-title">
+                                <div class="card-icon">🏆</div>
+                                <h3 class="card-title">Exposición y Graduación</h3>
+                            </div>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="card-content">
+                            <p class="card-description">Celebración y presentación del proyecto a la comunidad y familiares.</p>
+                            <ul class="detail-list">
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 4:</strong> Exposición a otros participantes (física)</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clase 5:</strong> Exposición a padres (virtual)</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Clases 6-8:</strong> Retroalimentación final, recreación y graduación</span>
+                                </li>
+                                <li class="detail-item">
+                                    <div class="detail-item-icon">✓</div>
+                                    <span><strong>Meta:</strong> 95% completan y exponen un PV integral</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-content">
+                <h1 class="slide-title">Metas Finales del Programa</h1>
+                <p class="slide-subtitle">Objetivos Generales y Proyecciones de Impacto</p>
+
+                <div class="full-content">
+                    <div class="content-grid">
+                        <div class="content-section">
+                            <h3 class="section-title">Objetivos Generales</h3>
+                            <ul class="detail-list">
+                                <li class="detail-item"><span>Desarrollar autoconocimiento y habilidades fundamentales.</span></li>
+                                <li class="detail-item"><span>Adquirir competencias técnicas y comunicativas.</span></li>
+                                <li class="detail-item"><span>Planificar el futuro educativo y laboral.</span></li>
+                                <li class="detail-item"><span>Culminar con un proyecto de vida accionable.</span></li>
+                            </ul>
+                        </div>
+                        <div class="content-section">
+                            <h3 class="section-title">Indicadores Generales</h3>
+                            <ul class="detail-list">
+                                <li class="detail-item"><span><strong>Tasa de completitud:</strong> 90% de los participantes terminan el programa.</span></li>
+                                <li class="detail-item"><span><strong>Mejora en autoevaluaciones:</strong> Aumento de confianza y percepción de crecimiento.</span></li>
+                                <li class="detail-item"><span><strong>Número de proyectos:</strong> Todos los participantes presentan un proyecto final.</span></li>
+                                <li class="detail-item"><span><strong>Feedback:</strong> Retroalimentación cualitativa positiva del programa.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="download-section">
+                        <p style="font-size: 1.4rem; font-weight: 500; margin-bottom: 1.5rem;">¡Empoderando a los jóvenes para un futuro brillante!</p>
+                        <a href="https://drive.google.com/uc?export=download&id=1h29wP7iTtAfAb-LyWMUKPw5Sl4Cpd2sw" class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Descargar Informe Completo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Anterior
+        </button>
+        <button class="nav-btn" id="next-btn">
+            Siguiente
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+    </div>
+
+    <script>
+        function toggleCard(card) {
+            card.classList.toggle('expanded');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlideIndex = 0;
+
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentSlideSpan = document.getElementById('current-slide');
+            const totalSlidesSpan = document.getElementById('total-slides');
+
+            totalSlidesSpan.textContent = totalSlides;
+
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    slide.classList.remove('active');
+                    if (index === currentSlideIndex) {
+                        slide.classList.add('active');
+                    }
+                });
+                
+                currentSlideSpan.textContent = currentSlideIndex + 1;
+                prevBtn.disabled = currentSlideIndex === 0;
+                nextBtn.disabled = currentSlideIndex === totalSlides - 1;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    updateSlide();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSlideIndex < totalSlides - 1) {
+                    currentSlideIndex++;
+                    updateSlide();
+                }
+            });
+
+            // Initial state
+            updateSlide();
+        });
+    </script>
+</body>
+</html>
